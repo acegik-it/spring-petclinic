@@ -17,13 +17,6 @@ spec:
       command:
         - cat
       tty: true
-      resources:
-       requests:
-        cpu: "0.05"
-        memory: "256Mi"
-       limits:
-        cpu: "2"
-        memory: "2Gi"
     - name: 'dind'
       image: docker:dind
       securityContext:
