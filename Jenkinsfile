@@ -17,10 +17,6 @@ spec:
       command:
         - cat
       tty: true
-      volumeMounts:
-        - mountPath: '/root/.m2'
-          name: maven-repo
-          readOnly: false
       resources:
        requests:
         cpu: "0.05"
@@ -37,10 +33,6 @@ spec:
       command:
         - cat
       tty: true
-  volumes:
-    - name: maven-repo
-      persistentVolumeClaim:
-        claimName: maven-repo-pvc
 """
         }
     }
