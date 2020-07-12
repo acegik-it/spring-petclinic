@@ -98,7 +98,7 @@ spec:
             steps {
                 container('dind') {
                         sh"""
-                        docker login -u ${DOCKER_CREDENTIALS.USR} -p ${DOCKER_CREDENTIALS.PWD}
+                        docker login -u ${DOCKER_CREDENTIALS_USR} -p ${DOCKER_CREDENTIALS_PWD}
                         docker push zandolsi/spring-petclnic:${VERSION}
                         """
                 }
