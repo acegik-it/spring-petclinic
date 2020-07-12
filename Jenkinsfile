@@ -107,12 +107,9 @@ spec:
 
         stage('Deploy to Preprod') {
             steps {
-                withKubeConfig([credentialsId: '<credential-id>',
-                    caCertificate: '<ca-certificate>',
-                    serverUrl: '<api-server-address>',
-                    contextName: '<context-name>',
-                    clusterName: '<cluster-name>',
-                    namespace: '<namespace>'
+                withKubeConfig([credentialsId: 'PREPROD_K8S_CREDENTIALS',
+                    serverUrl: 'https://25AB3C765CC3C10D6D8A7933BA51072E.yl4.eu-west-2.eks.amazonaws.com',
+                    namespace: 'petclinic'
                     ]) {
                         container('kubectl') {
                           sh"""
