@@ -97,12 +97,10 @@ spec:
         stage('Push Image') {
             steps {
                 container('dind') {
-                    withDockerRegistry([ credentialsId: "ZAN_DOCKER_CREDENTIALS", url: "" ]) {
                         sh"""
                         docker login -u ${DOCKER_CREDENTIALS.USR} -p ${DOCKER_CREDENTIALS.PWD}
                         docker push zandolsi/spring-petclnic:${VERSION}
                         """
-                    }
                 }
             }
         }
