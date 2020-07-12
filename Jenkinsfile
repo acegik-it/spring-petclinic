@@ -98,21 +98,29 @@ spec:
             steps {
                 container('dind') {
                         sh"""
-                        docker login -u ${DOCKER_CREDENTIALS_USR} -p ${DOCKER_CREDENTIALS_PWD}
+                        docker login -u ${DOCKER_CREDENTIALS_USR} -p ${DOCKER_CREDENTIALS_PSW}
                         docker push zandolsi/spring-petclnic:${VERSION}
                         """
                 }
             }
         }
 
-        stage('Deploy') {
+        stage('Deploy to Preprod') {
             steps {
-                container('kubectl') {
-                    sh"""
-                        sed -i 's/IMAGE_TAG/${VERSION}/g' deployment.yaml
-                        kubectl apply -f deployment.yaml -n jenkins
-                    """
-                }
+                withKubeConfig([credentialsId: '<credential-id>',
+                    caCertificate: '<ca-certificate>',
+                    serverUrl: '<api-server-address>',
+                    contextName: '<context-name>',
+                    clusterName: '<cluster-name>',
+                    namespace: '<namespace>'
+                    ]) {
+                        container('kubectl') {
+                          sh"""
+                            sed -i 's/IMAGE_TAG/${VERSION}/g' deployment.yaml
+                            kubectl apply -f deployment.yaml -n jenkins
+                          """
+                        }
+                     }
             }
         }
     }
