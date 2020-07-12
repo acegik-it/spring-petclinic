@@ -32,8 +32,6 @@ spec:
 
     environment {
         VERSION = ""
-        APP_NAME = ""
-        APP_GROUP = ""
     }
 
     options {
@@ -48,11 +46,9 @@ spec:
                 script {
                     deleteDir()
                     checkout scm
-                    def pom = readMavenPom()
-                    def current_version = pom.getVersion()
+                    def matcher = readFile('pom.xml') =~ '<version>(.+?)</version>'
+                    def current_version = matcher ? matcher[0][1] : '0.1.0'
                     VERSION = current_version+'.'+BUILD_NUMBER
-                    APP_NAME = pom.getArtifactId()
-                    APP_GROUP = pom.getGroupId()
                 }
             }
         }
