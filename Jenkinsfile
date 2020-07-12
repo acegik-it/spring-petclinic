@@ -31,6 +31,7 @@ spec:
     }
 
     environment {
+        DOCKER_CREDENTIALS = credentials('ZAN_DOCKER_CREDENTIALS')
         VERSION = ""
     }
 
@@ -82,7 +83,6 @@ spec:
         stage('Build Image') {
             steps {
                 container('dind') {
-                    withDockerRegistry([ credentialsId: "ZAN_DOCKER_CREDENTIALS",  url: "" ]) {
                         sh"""
                             mkdir target/working-dir
                             cp -R src/main/resources/docker/* target/working-dir/
@@ -90,7 +90,6 @@ spec:
                             cd target/working-dir
                             docker build -t zandolsi/spring-petclnic:${VERSION} .
                         """
-                    }
                 }
             }
         }
@@ -99,7 +98,10 @@ spec:
             steps {
                 container('dind') {
                     withDockerRegistry([ credentialsId: "ZAN_DOCKER_CREDENTIALS", url: "" ]) {
-                        sh "docker push zandolsi/spring-petclnic:${VERSION}"
+                        sh"""
+                        docker login -u ${DOCKER_CREDENTIALS.USR} -p ${DOCKER_CREDENTIALS.PWD}
+                        docker push zandolsi/spring-petclnic:${VERSION}
+                        """
                     }
                 }
             }
