@@ -113,8 +113,7 @@ spec:
                     ]) {
                         container('kubectl') {
                           sh"""
-                            sed -i 's/IMAGE_TAG/${VERSION}/g' deployment.yaml
-                            kubectl apply -f deployment.yaml -n jenkins
+                            kubectl get pods -n petclinic
                           """
                         }
                      }
