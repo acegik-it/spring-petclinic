@@ -108,8 +108,9 @@ spec:
             steps {
                 withAWS(credentials: 'AWS_CREDENTIALS', region: 'eu-west-2') {
                         container('kubectl') {
-                          writeFile file: "/kube/config", text: readFile(EKS_PREPROD_CONFIG)
+                          writeFile file: "$JENKINS_AGENT_WORKDIR/.kube/config", text: readFile(EKS_PREPROD_CONFIG)
                           sh"""
+                            export KUBECONFIG=$JENKINS_AGENT_WORKDIR/.kube/config
                             sed -i 's/IMAGE_TAG/${VERSION}/g' application.yaml
                             kubectl apply -f application.yaml
                           """
@@ -128,7 +129,7 @@ spec:
             steps {
                 withAWS(credentials: 'AWS_CREDENTIALS', region: 'eu-west-2') {
                         container('kubectl') {
-                          writeFile file: "/kube/config", text: readFile(EKS_PROD_CONFIG)
+                          writeFile file: "$JENKINS_AGENT_WORKDIR/.kube/config", text: readFile(EKS_PROD_CONFIG)
                           sh"""
                             kubectl get pods -n petclinic
                           """
