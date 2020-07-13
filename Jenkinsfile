@@ -22,7 +22,7 @@ spec:
       securityContext:
         privileged: true
     - name: 'kubectl'
-      image: lachlanevenson/k8s-kubectl:v1.14.2
+      image: thedevopschris/amazon-eks-kubectl
       command:
         - cat
       tty: true
@@ -32,6 +32,8 @@ spec:
 
     environment {
         DOCKER_CREDENTIALS = credentials('ZAN_DOCKER_CREDENTIALS')
+        EKS_PREPROD_CONFIG = credentials('EKS_PREPROD_CONFIG')
+        EKS_PROD_CONFIG = credentials('EKS_PROD_CONFIG')
         VERSION = ""
     }
 
@@ -107,12 +109,11 @@ spec:
 
         stage('Deploy to Preprod') {
             steps {
-                withKubeConfig([credentialsId: 'PREPROD_K8S_CREDENTIALS',
-                    serverUrl: 'https://25AB3C765CC3C10D6D8A7933BA51072E.yl4.eu-west-2.eks.amazonaws.com',
-                    namespace: 'petclinic'
-                    ]) {
+                withAWS(credentials: 'AWS_CREDENTIALS') {
                         container('kubectl') {
+                          writeFile file: "$JENKINS_AGENT_WORKDIR/.kube/config", text: readFile(EKS_CONFIG)
                           sh"""
+                            export KUBECONFIG=$JENKINS_AGENT_WORKDIR/.kube/config
                             kubectl get pods -n petclinic
                           """
                         }
