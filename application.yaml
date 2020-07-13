@@ -25,7 +25,7 @@ metadata:
   name: spring-petclinic
 spec:
   ports:
-  - port: 8282
+  - port: 80
     protocol: TCP
     targetPort: 8080
   type: LoadBalancer

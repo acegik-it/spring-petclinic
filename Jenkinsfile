@@ -113,6 +113,7 @@ spec:
                             export KUBECONFIG=$JENKINS_AGENT_WORKDIR/.kube/config
                             sed -i 's/IMAGE_TAG/${VERSION}/g' application.yaml
                             kubectl apply -f application.yaml
+                            kubectl get svc spring-petclinic
                           """
                         }
                }
@@ -131,7 +132,9 @@ spec:
                         container('kubectl') {
                           writeFile file: "$JENKINS_AGENT_WORKDIR/.kube/config", text: readFile(EKS_PROD_CONFIG)
                           sh"""
-                            kubectl get pods -n petclinic
+                            export KUBECONFIG=$JENKINS_AGENT_WORKDIR/.kube/config
+                            kubectl apply -f application.yaml
+                            kubectl get svc spring-petclinic
                           """
                         }
                 }
