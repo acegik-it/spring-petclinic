@@ -109,7 +109,7 @@ spec:
 
         stage('Deploy to Preprod') {
             steps {
-                withAWS(credentials: 'AWS_CREDENTIALS') {
+                withAWS(credentials: 'AWS_CREDENTIALS', region: 'eu-west-2') {
                         container('kubectl') {
                           writeFile file: "$JENKINS_AGENT_WORKDIR/.kube/config", text: readFile(EKS_PREPROD_CONFIG)
                           sh"""
@@ -130,7 +130,7 @@ spec:
 
        stage('Deploy to Preprod') {
             steps {
-                withAWS(credentials: 'AWS_CREDENTIALS') {
+                withAWS(credentials: 'AWS_CREDENTIALS', region: 'eu-west-2') {
                         container('kubectl') {
                           writeFile file: "$JENKINS_AGENT_WORKDIR/.kube/config", text: readFile(EKS_PROD_CONFIG)
                           sh"""
