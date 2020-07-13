@@ -7,9 +7,6 @@ pipeline {
             yaml """
 apiVersion: v1
 kind: Pod
-metadata:
-  labels:
-    pipeline: jenkinsfile
 spec:
   containers:
     - name: 'maven'
@@ -22,10 +19,12 @@ spec:
       securityContext:
         privileged: true
     - name: 'kubectl'
-      image: thedevopschris/amazon-eks-kubectl
+      image: lendingworks/aws-iam-authenticator:v0.5.0-alpine-3.7
       command:
         - cat
       tty: true
+      securityContext:
+       runAsUser: 0
 """
         }
     }
@@ -114,8 +113,8 @@ spec:
                           writeFile file: "$JENKINS_AGENT_WORKDIR/.kube/config", text: readFile(EKS_PREPROD_CONFIG)
                           sh"""
                             export KUBECONFIG=$JENKINS_AGENT_WORKDIR/.kube/config
-                            sed -i 's/IMAGE_TAG/${VERSION}/g' deployment.yaml
-                            kubectl get pods -n petclinic
+                            sed -i 's/IMAGE_TAG/${VERSION}/g' application.yaml
+                            kubectl apply -f application.yaml
                           """
                         }
                }
@@ -135,7 +134,7 @@ spec:
                           writeFile file: "$JENKINS_AGENT_WORKDIR/.kube/config", text: readFile(EKS_PROD_CONFIG)
                           sh"""
                             export KUBECONFIG=$JENKINS_AGENT_WORKDIR/.kube/config
-                            sed -i 's/IMAGE_TAG/${VERSION}/g' deployment.yaml
+                            sed -i 's/IMAGE_TAG/${VERSION}/g' application.yaml
                             kubectl get pods -n petclinic
                           """
                         }
