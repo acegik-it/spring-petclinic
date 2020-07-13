@@ -111,13 +111,35 @@ spec:
             steps {
                 withAWS(credentials: 'AWS_CREDENTIALS') {
                         container('kubectl') {
-                          writeFile file: "$JENKINS_AGENT_WORKDIR/.kube/config", text: readFile(EKS_CONFIG)
+                          writeFile file: "$JENKINS_AGENT_WORKDIR/.kube/config", text: readFile(EKS_PREPROD_CONFIG)
                           sh"""
                             export KUBECONFIG=$JENKINS_AGENT_WORKDIR/.kube/config
+                            sed -i 's/IMAGE_TAG/${VERSION}/g' deployment.yaml
                             kubectl get pods -n petclinic
                           """
                         }
-                     }
+               }
+            }
+        }
+
+       stage('E2E Test') {
+           steps {
+                sh "echo executing e2e tests..."
+           }
+       }
+
+       stage('Deploy to Preprod') {
+            steps {
+                withAWS(credentials: 'AWS_CREDENTIALS') {
+                        container('kubectl') {
+                          writeFile file: "$JENKINS_AGENT_WORKDIR/.kube/config", text: readFile(EKS_PROD_CONFIG)
+                          sh"""
+                            export KUBECONFIG=$JENKINS_AGENT_WORKDIR/.kube/config
+                            sed -i 's/IMAGE_TAG/${VERSION}/g' deployment.yaml
+                            kubectl get pods -n petclinic
+                          """
+                        }
+                }
             }
         }
     }
