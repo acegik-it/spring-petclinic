@@ -128,7 +128,7 @@ spec:
            }
        }
 
-       stage('Deploy to Preprod') {
+       stage('Deploy to Prod') {
             steps {
                 withAWS(credentials: 'AWS_CREDENTIALS', region: 'eu-west-2') {
                         container('kubectl') {
