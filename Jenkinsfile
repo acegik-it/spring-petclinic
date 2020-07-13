@@ -19,12 +19,10 @@ spec:
       securityContext:
         privileged: true
     - name: 'kubectl'
-      image: lendingworks/aws-iam-authenticator:v0.5.0-alpine-3.7
+      image: tiborv/aws-kubectl
       command:
         - cat
       tty: true
-      securityContext:
-       runAsUser: 0
 """
         }
     }
@@ -110,9 +108,8 @@ spec:
             steps {
                 withAWS(credentials: 'AWS_CREDENTIALS', region: 'eu-west-2') {
                         container('kubectl') {
-                          writeFile file: "$JENKINS_AGENT_WORKDIR/.kube/config", text: readFile(EKS_PREPROD_CONFIG)
+                          writeFile file: "/kube/config", text: readFile(EKS_PREPROD_CONFIG)
                           sh"""
-                            export KUBECONFIG=$JENKINS_AGENT_WORKDIR/.kube/config
                             sed -i 's/IMAGE_TAG/${VERSION}/g' application.yaml
                             kubectl apply -f application.yaml
                           """
@@ -131,10 +128,8 @@ spec:
             steps {
                 withAWS(credentials: 'AWS_CREDENTIALS', region: 'eu-west-2') {
                         container('kubectl') {
-                          writeFile file: "$JENKINS_AGENT_WORKDIR/.kube/config", text: readFile(EKS_PROD_CONFIG)
+                          writeFile file: "/kube/config", text: readFile(EKS_PROD_CONFIG)
                           sh"""
-                            export KUBECONFIG=$JENKINS_AGENT_WORKDIR/.kube/config
-                            sed -i 's/IMAGE_TAG/${VERSION}/g' application.yaml
                             kubectl get pods -n petclinic
                           """
                         }
